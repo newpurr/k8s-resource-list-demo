@@ -1,0 +1,21 @@
+# kubectl delete pods liveness-exec-pod
+# kubectl apply -f liveness-probe-exec.yml
+# kubectl get pods --all-namespaces -o wide -w
+# kubectl describe pod liveness-exec-pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-exec-pod
+  namespace: default
+spec:
+  containers:
+    - name: liveness-exec-container
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh","-c","touch /tmp/live ; sleep 60; rm -rf /tmp/live; sleep
+  3600"]
+      readinessProbe: # 存活检测
+        exec:
+          command: ["test","-e","/tmp/live"]
+        initialDelaySeconds: 1 # 延时1s，当容器启动1s后，才会去执行存活检测
+        periodSeconds: 3 # 重试的循环时间为3s

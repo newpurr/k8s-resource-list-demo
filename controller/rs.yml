@@ -1,0 +1,22 @@
+apiVersion: apps/v1 # 版本
+kind: ReplicaSet # 类型为ReplicaSet
+metadata: # 元信息
+  name: frontend-nginx # 名称
+spec: # 详细定义对象
+  replicas: 3 # 期望副本数
+  selector: # 选择器
+    matchLabels: # 匹配标签
+      tier: frontend-nginx # 标签信息，k-> tier v->frontend
+  template: # 配置POD相关的容器模板
+    metadata: # 模板的元信息
+      labels: # POD的标签，提供给selector使用，ReplicaSet通过选择器来判断副本数
+        tier: frontend-nginx
+    spec: # 详细定义对象
+      containers: # 容器
+        - name: nginx
+          image: nginx
+          env: # 环境变量
+            - name: GET_HOSTS_FROM
+              value: dns
+          ports: # 暴露的对象
+            - containerPort: 80

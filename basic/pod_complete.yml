@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Pod # pod类型的资源
+metadata: # 资源元数据
+  name: myapp-pod-name # pod的名称
+  namespace: default   # 资源的命名空间
+  labels: # 标签集合
+    app: myapp-label-name
+    version: v1
+spec: # 期望的状态（disired state）
+  containers: # 容器的详细信息
+    - name: myapp-container-name # 容器名
+      image: "nginx:latest"      # 镜像
+      # imagePullPolicy 镜像拉取策略
+      # Always(默认)：意思是每次尝试重新拉取镜像
+      # Never：表示仅使用本地镜像
+      # IfNotPresent：如果本地有镜像就是用本地镜像，没有就拉取在线镜像
+      imagePullPolicy: IfNotPresent
+      readinessProbe: # 就绪检测
+        httpGet: # http检测
+          port: 80
+          path: /index1.html
+        initialDelaySeconds: 1 # 延迟1s
+        periodSeconds: 3
+        timeoutSeconds: 10
+      livenessProbe: # 存活检测
+        exec: # 命令检测
+          command: ["test","-e","/tmp/live"]
+        #        tcpSocket: # tcp检测
+        #          port: 80
+        initialDelaySeconds: 1
+        periodSeconds: 3
+      command: # main容器启动后执行的命令
+        - "/bin/sh"
+        - "-c"
+        - "sleep 3600"
+      lifecycle:
+        postStart: # 启动前钩子
+          exec:
+            command: ["/bin/sh", "-c", "echo Hello from the postStart handler >
+        /usr/share/message"]
+        preStop: # 停止前钩子
+          exec:
+            command: ["/bin/sh", "-c", "echo Hello from the poststop handler >
+        /usr/share/message"]
+  restartPolicy: Always
+  initContainers: # initC 初始化容器
+    - name: init-myservice
+      image: busybox
+      command: ['sh', '-c', 'until nslookup myservice; do echo waiting for myservice; sleep 2;
+      done;']# 执行myservice的域名解析动作，直到解析成功
+    - name: init-mydb
+      image: busybox
+      command: ['sh', '-c', 'until nslookup mydb; do echo waiting for mydb; sleep 2; done;']# 执行mydb的域名解析动作，直到解析成功
+
+#status:"" # 当前状态，本字段有 Kubernetes 自身维护，用户不能去定义

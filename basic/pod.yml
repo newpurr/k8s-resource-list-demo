@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod # pod类型的资源
+metadata:
+  name: myapp-pod-name # pod的名称
+  namespace: default   # 资源的命名空间
+  labels: # 标签
+    app: myapp-label-name
+    version: v1
+spec: # 详细信息
+  containers: # 容器的详细信息
+    - name: myapp-container-name # 容器名
+      image: "nginx:latest" # 镜像
+      # imagePullPolicy 镜像拉取策略
+      # Always(默认)：意思是每次尝试重新拉取镜像
+      # Never：表示仅使用本地镜像
+      # IfNotPresent：如果本地有镜像就是用本地镜像，没有就拉取在线镜像
+
+      imagePullPolicy: IfNotPresent
+    - name: myapp-container-name2
+      image: "nginx:latest"
+      imagePullPolicy: IfNotPresent
+  restartPolicy: Always

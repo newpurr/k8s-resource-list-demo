@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-exec-pod
+  namespace: default
+spec:
+  containers:
+    - name: readiness-httpget-container
+      image: "nginx:latest"
+      imagePullPolicy: IfNotPresent
+      readinessProbe:
+        tcpSocket:
+          port: 80
+        initialDelaySeconds: 1 # 初始化延迟时间，单位是秒
+        periodSeconds: 3

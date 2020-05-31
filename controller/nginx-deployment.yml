@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-name # deployment 控制器的名称
+  labels: # 声明nginx-deployment-name这个deployment控制器拥有的标签
+    app: nginx-deployment-app-label
+spec: # 配置详细定义对象
+  replicas: 1 # 声明期望的POD副本数
+  template: # 配置POD相关的容器模板
+    metadata: # 模板的元信息
+      labels: # 声明template拥有的标签
+        app: nginx-deployment-app-label
+    spec:
+      containers:
+        - name: nginx-deployment-container
+          image: nginx:1.9.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: nginx-deployment-app-label
